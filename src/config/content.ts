@@ -38,6 +38,9 @@ export const CONTACT = {
   githubLabel: "github.com/At0kSharma",
   phone: "+91-9288389180",
   phoneHref: "tel:+919288389180",
+  // Currently unused: the download buttons were removed until the PDF
+  // exists. To restore them, drop Alok_Sharma_Software_Engineer.pdf into
+  // public/ and re-add the button in Hero.astro and Contact.astro.
   resumeFile: "/Alok_Sharma_Software_Engineer.pdf",
 };
 
