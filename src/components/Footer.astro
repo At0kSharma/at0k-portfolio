@@ -1,0 +1,10 @@
+---
+import { PROFILE } from "../config/content";
+const year = new Date().getFullYear();
+---
+<footer class="border-t border-white/10 py-10 px-6">
+  <div class="mx-auto max-w-6xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <p class="text-sm text-gray-500">© {year} {PROFILE.name}</p>
+    <p class="text-sm text-gray-600 font-mono">at0k.com</p>
+  </div>
+</footer>
