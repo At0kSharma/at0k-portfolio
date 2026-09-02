@@ -58,6 +58,18 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    name: "AT0K Privacy",
+    tagline: "Multi-jurisdiction privacy compliance, DPDP live",
+    description:
+      "Privacy operations platform built around India's DPDP Act, with field schemas drafted for GDPR, CCPA, PIPEDA, POPIA, PDPA, PDPL and DORA. Covers consent records and forms, data inventory and ROPA, DPIA, vendor and breach management, data subject requests with evidence attachments, and an append-only audit trail. Ships an embeddable JavaScript consent SDK and a public DSR intake, with email OTP sign-in and per-tenant isolation throughout.",
+    stack: ["FastAPI", "Next.js", "TypeScript", "PostgreSQL", "Celery", "Redis", "Docker"],
+    link: {
+      href: "https://privacy.at0k.com",
+      label: "privacy.at0k.com",
+      note: "Live public demo — credentials shown on the sign-in page",
+    },
+  },
+  {
     name: "PurpleCop",
     tagline: "Multi-tenant enterprise GRC & cybersecurity platform",
     description:
