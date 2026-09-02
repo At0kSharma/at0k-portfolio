@@ -1,31 +1,10 @@
 ---
 import { PROFILE } from "../config/content";
 ---
-<section id="top" class="pt-32 sm:pt-40 pb-16 sm:pb-24 px-6">
-  <div class="mx-auto max-w-6xl">
-    <div class="flex flex-wrap gap-2 mb-8">
-      {PROFILE.badges.map((badge) => (
-        <span class="px-3 py-1 rounded-full border border-brand/30 bg-brand/10 text-brand text-xs font-medium">
-          {badge}
-        </span>
-      ))}
-    </div>
-    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight mb-4">
-      {PROFILE.name}
-    </h1>
-    <p class="text-lg sm:text-xl text-brand font-medium mb-6">{PROFILE.title}</p>
-    <p class="text-base sm:text-lg text-gray-400 max-w-2xl leading-relaxed mb-10">
-      {PROFILE.tagline}
-    </p>
-    <div class="flex items-center gap-4 flex-wrap">
-      <a
-        href="#projects"
-        class="px-6 py-3 rounded-xl bg-brand hover:bg-brand/90 text-white text-sm font-semibold transition-colors"
-      >View projects</a>
-      <a
-        href="#contact"
-        class="px-6 py-3 rounded-xl border border-white/20 text-white text-sm font-semibold hover:bg-white/10 transition-colors"
-      >Get in touch</a>
-    </div>
+<header class="masthead" id="top">
+  <h1 class="name">{PROFILE.name}<span>.</span></h1>
+  <p class="thesis">{PROFILE.thesis}</p>
+  <div class="whereabouts">
+    {PROFILE.whereabouts.map((item) => <span>{item}</span>)}
   </div>
-</section>
+</header>

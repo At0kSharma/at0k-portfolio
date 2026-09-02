@@ -1,35 +1,22 @@
 ---
-import { EXPERIENCE, EDUCATION } from "../config/content";
+import { EXPERIENCE } from "../config/content";
 ---
-<section id="experience" class="py-16 sm:py-24 px-6 border-t border-white/10">
-  <div class="mx-auto max-w-6xl">
-    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-12">Experience</h2>
-    <div class="space-y-10">
-      {EXPERIENCE.map((role) => (
-        <div class="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-2 md:gap-8">
-          <p class="text-sm text-gray-500 font-mono pt-1">{role.period}</p>
-          <div>
-            <h3 class="text-lg font-semibold text-white">{role.title}</h3>
-            <p class="text-sm text-brand mb-4">{role.company}</p>
-            <ul class="space-y-2">
-              {role.bullets.map((bullet) => (
-                <li class="text-sm text-gray-400 leading-relaxed flex gap-3">
-                  <span class="text-gray-600 shrink-0" aria-hidden="true">—</span>
-                  <span>{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <div class="mt-16 pt-10 border-t border-white/10 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-2 md:gap-8">
-      <p class="text-sm text-gray-500 font-mono pt-1">{EDUCATION.year}</p>
-      <div>
-        <h3 class="text-lg font-semibold text-white">{EDUCATION.degree}</h3>
-        <p class="text-sm text-gray-400">{EDUCATION.institution}</p>
-      </div>
-    </div>
+<section id="experience">
+  <div class="band">
+    <h2>History</h2>
+    <em>2020 — present</em>
   </div>
+
+  {EXPERIENCE.map((role) => (
+    <article class="stint">
+      <div class="when">{role.period}</div>
+      <div>
+        <h3>{role.title}</h3>
+        <p class="at">{role.company}</p>
+        <ul>
+          {role.bullets.map((bullet) => <li>{bullet}</li>)}
+        </ul>
+      </div>
+    </article>
+  ))}
 </section>

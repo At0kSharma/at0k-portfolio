@@ -7,7 +7,12 @@ export type ProjectLink = {
 export type DemoAccess = {
   email: string;
   password: string;
-  hint?: string;
+};
+
+export type Count = {
+  /** The number itself. Only ever something that exists in the system. */
+  value: string;
+  label: string;
 };
 
 export type Project = {
@@ -16,6 +21,14 @@ export type Project = {
   description: string;
   stack: string[];
   link?: ProjectLink;
+  /** Evidence of scale. Left empty rather than padded with soft numbers. */
+  counts?: Count[];
+  /**
+   * Shown in place of a demo grant when there is nothing to sign into.
+   * One entry per rendered line - kept as an array rather than embedded
+   * newlines so the template needs no string surgery.
+   */
+  noAccess?: string[];
   /**
    * Published sign-in for a public demo. Deliberately plain text: these are
    * seeded sample tenants with no real data, and a reviewer who has to email
@@ -40,6 +53,14 @@ export type SkillGroup = {
 export const PROFILE = {
   name: "Alok Sharma",
   title: "Senior Software Engineer · GRC Platform Engineer",
+  /** The opening line. A claim about the work, not a job title. */
+  thesis:
+    "I turn regulation into software that ships — and then run it in production.",
+  whereabouts: [
+    "Bengaluru, India",
+    "Six years, three companies",
+    "Open to senior backend & platform roles",
+  ],
   tagline:
     "6+ years building enterprise software and multi-tenant SaaS platforms — turning GDPR, ISO 27001, SOC 2 and DPDP requirements into software that ships.",
   badges: ["DPDP", "GDPR", "ISO 27001", "SOC 2"],
@@ -59,32 +80,43 @@ export const CONTACT = {
 
 export const PROJECTS: Project[] = [
   {
-    name: "AI Policy Builder",
-    tagline: "AI-generated compliance policies, end to end",
-    description:
-      "Multi-tenant SaaS that generates compliance policies with AI, then maps them to framework controls, runs gap analysis, and produces evidence requirements. Async generation pipeline with job polling, per-org rate limiting and token budgets, BYOK AI providers, and PDF/Markdown export.",
-    stack: ["FastAPI", "React", "TypeScript", "Celery", "MySQL", "Redis", "Docker", "LiteLLM"],
-    link: {
-      href: "https://aipolicy.at0k.com",
-      label: "aipolicy.at0k.com",
-      note: "Live deployment — private demo, credentials on request",
-    },
-  },
-  {
-    name: "AT0K Privacy",
+    name: "at0k Privacy",
     tagline: "Multi-jurisdiction privacy compliance, DPDP live",
     description:
       "Privacy operations platform built around India's DPDP Act, with field schemas drafted for GDPR, CCPA, PIPEDA, POPIA, PDPA, PDPL and DORA. Covers consent records and forms, data inventory and ROPA, DPIA, vendor and breach management, data subject requests with evidence attachments, and an append-only audit trail. Ships an embeddable JavaScript consent SDK and a public DSR intake, with email OTP sign-in and per-tenant isolation throughout.",
     stack: ["FastAPI", "Next.js", "TypeScript", "PostgreSQL", "Celery", "Redis", "Docker"],
+    counts: [
+      { value: "25", label: "backend modules" },
+      { value: "7", label: "jurisdictions schema-drafted" },
+      { value: "1", label: "live: India DPDP" },
+    ],
     link: {
       href: "https://privacy.at0k.com",
       label: "privacy.at0k.com",
-      note: "Live public demo — sample data only",
     },
     demo: {
       email: "admin@example.com",
       password: "PrivacyOS@Demo2026",
-      hint: "The 6-digit verification code is shown on screen at the next step.",
+    },
+  },
+  {
+    name: "AI Policy Builder",
+    tagline: "AI-generated compliance policies, end to end",
+    description:
+      "Multi-tenant SaaS that generates compliance policies with AI, then maps them to framework controls, runs gap analysis, and produces evidence requirements. Async generation pipeline with job polling, per-org rate limiting and token budgets, BYOK AI providers, and PDF/Markdown export. Auth runs on AWS Cognito.",
+    stack: ["FastAPI", "React", "TypeScript", "Celery", "MySQL", "Redis", "Cognito", "LiteLLM"],
+    counts: [
+      { value: "4", label: "frameworks" },
+      { value: "212", label: "controls catalogued" },
+      { value: "24", label: "canonical policies" },
+    ],
+    // No demo grant: the deployed tenant has no AI provider configured, so a
+    // reviewer could sign in and browse the catalogue but every generation
+    // would fail. Publishing credentials to that is worse than publishing none.
+    noAccess: ["Live deployment.", "Walkthrough on request."],
+    link: {
+      href: "https://aipolicy.at0k.com",
+      label: "aipolicy.at0k.com",
     },
   },
   {
@@ -93,6 +125,11 @@ export const PROJECTS: Project[] = [
     description:
       "Technical lead and core developer on a 10-module GRC platform. Shipped policy automation, risk register, TPRM, DPDP compliance, LMS, trust center, document management, compliance scoring and audit management — plus continuous compliance monitoring that pulls configuration from AWS, GCP, Salesforce, Zoho and HRMS platforms to evaluate controls.",
     stack: ["Laravel", "React", "PostgreSQL", "Docker", "CI/CD"],
+    counts: [
+      { value: "10", label: "modules" },
+      { value: "5", label: "cloud integrations" },
+    ],
+    noAccess: ["Commercial product.", "Walkthrough on request."],
   },
   {
     name: "at0k Editor + Collab",
@@ -100,6 +137,7 @@ export const PROJECTS: Project[] = [
     description:
       "An editor core and pro extension set, paired with a real-time collaboration server teams host themselves — no vendor lock-in. Backed by a licensing service issuing Ed25519-signed license JWTs with heartbeat reporting and revocation.",
     stack: ["TypeScript", "Tiptap", "Hocuspocus", "FastAPI", "PostgreSQL"],
+    noAccess: ["Licensed product.", "Source available under NDA."],
   },
   {
     name: "Commercial LMS Platforms",

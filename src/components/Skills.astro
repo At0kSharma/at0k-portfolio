@@ -1,22 +1,18 @@
 ---
 import { SKILLS } from "../config/content";
 ---
-<section id="skills" class="py-16 sm:py-24 px-6 border-t border-white/10">
-  <div class="mx-auto max-w-6xl">
-    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-12">Skills</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {SKILLS.map((group) => (
-        <div>
-          <h3 class="text-sm font-semibold text-white mb-3">{group.label}</h3>
-          <div class="flex flex-wrap gap-2">
-            {group.items.map((item) => (
-              <span class="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-gray-300 text-xs font-mono">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+<section id="skills">
+  <div class="band">
+    <h2>Stack</h2>
+    <em>what I reach for</em>
+  </div>
+
+  <div class="kit">
+    {SKILLS.map((group) => (
+      <div>
+        <h3>{group.label}</h3>
+        <p>{group.items.join(", ")}</p>
+      </div>
+    ))}
   </div>
 </section>

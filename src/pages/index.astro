@@ -1,6 +1,5 @@
 ---
-import '../styles/global.css';
-import Nav from "../components/Nav.astro";
+import "../styles/global.css";
 import Hero from "../components/Hero.astro";
 import Projects from "../components/Projects.astro";
 import Experience from "../components/Experience.astro";
@@ -9,7 +8,7 @@ import Contact from "../components/Contact.astro";
 import Footer from "../components/Footer.astro";
 ---
 
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,6 +16,13 @@ import Footer from "../components/Footer.astro";
     <meta name="description" content="Alok Sharma — Senior Software Engineer and GRC Platform Engineer. Multi-tenant SaaS, compliance automation, GDPR/ISO 27001/SOC 2/DPDP." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href="https://at0k.com/" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap"
+    />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://at0k.com/" />
@@ -27,15 +33,18 @@ import Footer from "../components/Footer.astro";
     <meta name="twitter:title" content="Alok Sharma — Senior Software Engineer" />
     <meta name="twitter:description" content="Senior Software Engineer and GRC Platform Engineer. Multi-tenant SaaS, compliance automation, GDPR/ISO 27001/SOC 2/DPDP." />
   </head>
-  <body class="bg-[#0a0a0a] text-white antialiased">
-    <Nav />
-    <main>
+  <body>
+    <!-- No nav bar: the page is one column of five sections and a jump menu
+         over that length is furniture, not navigation. -->
+    <div class="sheet">
       <Hero />
-      <Projects />
-      <Experience />
-      <Skills />
-      <Contact />
-    </main>
-    <Footer />
+      <main>
+        <Projects />
+        <Experience />
+        <Skills />
+        <Contact />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>
