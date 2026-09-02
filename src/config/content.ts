@@ -4,12 +4,25 @@ export type ProjectLink = {
   note?: string;
 };
 
+export type DemoAccess = {
+  email: string;
+  password: string;
+  hint?: string;
+};
+
 export type Project = {
   name: string;
   tagline: string;
   description: string;
   stack: string[];
   link?: ProjectLink;
+  /**
+   * Published sign-in for a public demo. Deliberately plain text: these are
+   * seeded sample tenants with no real data, and a reviewer who has to email
+   * for access simply will not. Never point this at an environment holding
+   * anything real.
+   */
+  demo?: DemoAccess;
 };
 
 export type Role = {
@@ -66,7 +79,12 @@ export const PROJECTS: Project[] = [
     link: {
       href: "https://privacy.at0k.com",
       label: "privacy.at0k.com",
-      note: "Live public demo — credentials shown on the sign-in page",
+      note: "Live public demo — sample data only",
+    },
+    demo: {
+      email: "admin@example.com",
+      password: "PrivacyOS@Demo2026",
+      hint: "The 6-digit verification code is shown on screen at the next step.",
     },
   },
   {
