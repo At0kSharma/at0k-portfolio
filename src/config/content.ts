@@ -120,9 +120,12 @@ export const PROJECTS: Project[] = [
       href: "https://privacy.at0k.com",
       label: "privacy.at0k.com",
     },
+    // The same pair as AI Policy Builder below, on purpose: one credential
+    // opens both systems, so a reviewer never has to work out which set goes
+    // where. Seeded on the demo tenant by app/seeds/demo_data.py.
     demo: {
-      email: "admin@example.com",
-      password: "PrivacyOS@Demo2026",
+      email: "demouser@at0k.com",
+      password: "demo@r00t",
     },
   },
   {
