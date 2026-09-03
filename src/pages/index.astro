@@ -1,21 +1,30 @@
 ---
 import "../styles/global.css";
-import Hero from "../components/Hero.astro";
+import { PROFILE } from "../config/content";
+import Rail from "../components/Rail.astro";
+import Opener from "../components/Opener.astro";
 import Projects from "../components/Projects.astro";
 import Experience from "../components/Experience.astro";
+import Domains from "../components/Domains.astro";
 import Skills from "../components/Skills.astro";
 import Contact from "../components/Contact.astro";
 import Footer from "../components/Footer.astro";
+
+const TITLE = "Alok Sharma — Senior Software Engineer";
 ---
 
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Alok Sharma — Senior Software Engineer</title>
-    <meta name="description" content="Alok Sharma — Senior Software Engineer and GRC Platform Engineer. Multi-tenant SaaS, compliance automation, GDPR/ISO 27001/SOC 2/DPDP." />
+    <title>{TITLE}</title>
+    <meta name="description" content={PROFILE.tagline} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href="https://at0k.com/" />
+
+    <!-- Both grounds are real, so neither can be hardcoded here. -->
+    <meta name="theme-color" content="#F4F1EC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141110" media="(prefers-color-scheme: dark)" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,25 +35,100 @@ import Footer from "../components/Footer.astro";
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://at0k.com/" />
-    <meta property="og:title" content="Alok Sharma — Senior Software Engineer" />
-    <meta property="og:description" content="Senior Software Engineer and GRC Platform Engineer. Multi-tenant SaaS, compliance automation, GDPR/ISO 27001/SOC 2/DPDP." />
+    <meta property="og:title" content={TITLE} />
+    <meta property="og:description" content={PROFILE.tagline} />
 
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Alok Sharma — Senior Software Engineer" />
-    <meta name="twitter:description" content="Senior Software Engineer and GRC Platform Engineer. Multi-tenant SaaS, compliance automation, GDPR/ISO 27001/SOC 2/DPDP." />
+    <meta name="twitter:title" content={TITLE} />
+    <meta name="twitter:description" content={PROFILE.tagline} />
+
+    <!-- Runs before first paint so a stored choice never flashes the other
+         ground. Inline and unbundled by necessity: a deferred module would
+         land after the page has already been painted in the wrong theme. -->
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem("theme");
+        if (saved === "dark" || saved === "light") {
+          document.documentElement.dataset.theme = saved;
+        }
+      } catch (error) {
+        // Storage can be blocked outright. The CSS still resolves the
+        // viewer's system preference on its own, so there is nothing to fix.
+      }
+    </script>
   </head>
   <body>
-    <!-- No nav bar: the page is one column of five sections and a jump menu
-         over that length is furniture, not navigation. -->
-    <div class="sheet">
-      <Hero />
-      <main>
-        <Projects />
-        <Experience />
-        <Skills />
-        <Contact />
-      </main>
-      <Footer />
+    <div class="shell">
+      <Rail />
+      <div class="register">
+        <main>
+          <Opener />
+          <Projects />
+          <Experience />
+          <Domains />
+          <Skills />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
     </div>
+
+    <script>
+      const root = document.documentElement;
+
+      // ── Theme toggle ───────────────────────────────────────────────
+      // Reads the ground actually on screen rather than a remembered value,
+      // so the first click always flips what the viewer is looking at.
+      const switcher = document.getElementById("theme-switch");
+      switcher?.addEventListener("click", () => {
+        const current =
+          root.dataset.theme ??
+          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        const next = current === "dark" ? "light" : "dark";
+
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem("theme", next);
+        } catch (error) {
+          // Choice holds for this page view; it just will not survive a reload.
+        }
+      });
+
+      // ── Index scroll-spy ───────────────────────────────────────────
+      // Marks the section the reader is in. The rail nav is the only list of
+      // sections, so the observer is built from its own links.
+      const links = Array.from(
+        document.querySelectorAll<HTMLAnchorElement>(".index a[href^='#']"),
+      );
+      const sections = links
+        .map((link) => document.querySelector<HTMLElement>(link.hash))
+        .filter((section): section is HTMLElement => section !== null);
+
+      if (sections.length > 0) {
+        // Visible sections in document order; the topmost one wins, so
+        // scrolling up highlights the section coming into view rather than
+        // the one still occupying the bottom of the screen.
+        const visible = new Set<Element>();
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) visible.add(entry.target);
+              else visible.delete(entry.target);
+            }
+
+            const active = sections.find((section) => visible.has(section));
+            for (const link of links) {
+              link.classList.toggle("on", active !== undefined && link.hash === `#${active.id}`);
+            }
+          },
+          // Ignores the bottom two-thirds of the viewport, so a section counts
+          // as current once it reaches the reading band near the top.
+          { rootMargin: "0px 0px -66% 0px" },
+        );
+
+        for (const section of sections) observer.observe(section);
+      }
+    </script>
   </body>
 </html>

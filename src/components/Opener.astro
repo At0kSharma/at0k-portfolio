@@ -1,0 +1,14 @@
+---
+import { PROFILE, HEADLINE_COUNTS } from "../config/content";
+---
+
+<!-- The name lives in the rail, so the register opens on the claim instead
+     of repeating it, and puts the figures that back the claim directly
+     underneath - before a reader has scrolled once. -->
+<div class="opener">
+  <p class="thesis">{PROFILE.thesis}</p>
+
+  <div class="whereabouts">
+    {PROFILE.whereabouts.map((item) => <span>{item}</span>)}
+  </div>
+</div>

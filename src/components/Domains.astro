@@ -1,14 +1,15 @@
 ---
-import { SKILLS } from "../config/content";
+import { DOMAINS } from "../config/content";
 ---
-<section id="stack">
+
+<section id="domains">
   <div class="band">
-    <h2>Stack</h2>
-    <em>tools, not judgment</em>
+    <h2>Domains</h2>
+    <em>what survives a change of stack</em>
   </div>
 
   <div class="kit">
-    {SKILLS.map((group) => (
+    {DOMAINS.map((group) => (
       <div>
         <h3>{group.label}</h3>
         <p>{group.items.join(", ")}</p>

@@ -1,17 +1,29 @@
 ---
 import { PROJECTS } from "../config/content";
+
+// Derived rather than declared: a project is live because it has somewhere to
+// point at, and open because it has credentials published. Neither tally can
+// disagree with the records underneath it.
+const live = PROJECTS.filter((project) => project.link).length;
+const open = PROJECTS.filter((project) => project.demo).length;
 ---
+
 <section id="work">
   <div class="band">
     <h2>Work</h2>
-    <em>one system you can sign into right now</em>
+    <em>{live} live · {open} you can sign into right now</em>
   </div>
 
   <div class="work">
     {PROJECTS.map((project) => (
       <article class="job">
         <div>
-          <h3>{project.name}</h3>
+          <div class="title">
+            {/* Decorative: whether a project is live is already stated by the
+                link in the grant header or by the note that replaces it. */}
+            <span class={project.link ? "dot" : "dot closed"} aria-hidden="true"></span>
+            <h3>{project.name}</h3>
+          </div>
           <p class="kicker">{project.tagline}</p>
           <p class="prose">{project.description}</p>
           {project.counts && (
@@ -33,8 +45,16 @@ import { PROJECTS } from "../config/content";
               </a>
             </div>
             <dl>
-              <dt>email</dt><dd>{project.demo.email}</dd>
-              <dt>password</dt><dd>{project.demo.password}</dd>
+              <dt>email</dt>
+              <dd>
+                <span>{project.demo.email}</span>
+                <button class="copy" type="button" data-copy={project.demo.email}>copy</button>
+              </dd>
+              <dt>password</dt>
+              <dd>
+                <span>{project.demo.password}</span>
+                <button class="copy" type="button" data-copy={project.demo.password}>copy</button>
+              </dd>
             </dl>
           </div>
         ) : project.noAccess ? (
@@ -46,3 +66,30 @@ import { PROJECTS } from "../config/content";
     ))}
   </div>
 </section>
+
+<script>
+  // Credentials are meant to be used, not retyped. The button reverts on its
+  // own so the control never sits lying about a copy made minutes ago.
+  document.querySelectorAll<HTMLButtonElement>("button.copy").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const value = button.dataset.copy;
+      if (!value) return;
+
+      try {
+        await navigator.clipboard.writeText(value);
+        button.textContent = "copied";
+        button.dataset.state = "done";
+      } catch {
+        // Clipboard access can be refused outright (insecure origin, denied
+        // permission). Say so rather than claiming a copy that never happened;
+        // the value is selectable next to the button either way.
+        button.textContent = "select it";
+      }
+
+      window.setTimeout(() => {
+        button.textContent = "copy";
+        delete button.dataset.state;
+      }, 2000);
+    });
+  });
+</script>

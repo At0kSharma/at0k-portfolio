@@ -1,0 +1,53 @@
+---
+import { PROFILE, CONTACT } from "../config/content";
+
+/**
+ * The single source for the index. Every id here must match a section id in
+ * the register, and the scroll-spy in index.astro reads the same hrefs, so
+ * the nav and the document cannot drift apart.
+ */
+const SECTIONS = [
+  { id: "work", label: "Work" },
+  { id: "history", label: "History" },
+  { id: "domains", label: "Domains" },
+  { id: "stack", label: "Stack" },
+  { id: "contact", label: "Contact" },
+];
+
+// Split for typesetting only - the config keeps one canonical string each.
+const [given, family] = PROFILE.name.split(" ");
+const roleLines = PROFILE.title.split(" · ");
+---
+
+<header class="rail" id="top">
+  <div>
+    <h1 class="name">{given}<br />{family}<span>.</span></h1>
+    <p class="role">
+      {roleLines.map((line, i) => (
+        <>{i > 0 && <br />}{line}</>
+      ))}
+    </p>
+  </div>
+
+  <nav class="index" aria-label="Sections">
+    <span class="lbl">index</span>
+    {SECTIONS.map((section) => (
+      <a href={`#${section.id}`}>{section.label}</a>
+    ))}
+  </nav>
+
+  <p class="availability"><span class="dot"></span>Open to senior roles</p>
+
+  <div class="meta">
+    <span>Bengaluru, India</span>
+    <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+    <a href={CONTACT.github} target="_blank" rel="noopener noreferrer">
+      {CONTACT.githubLabel}
+    </a>
+  </div>
+
+  <button class="themeswitch" type="button" id="theme-switch">
+    <span class="to-dark">☾&nbsp; night</span>
+    <span class="to-light">☀&nbsp; day</span>
+  </button>
+</header>

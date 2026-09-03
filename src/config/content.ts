@@ -20,6 +20,11 @@ export type Project = {
   tagline: string;
   description: string;
   stack: string[];
+  /**
+   * Presence of a link is what makes a project "live" — the status dot in the
+   * register and the live tally in the Work band are both derived from it,
+   * so there is no separate status field to keep in sync with reality.
+   */
   link?: ProjectLink;
   /** Evidence of scale. Left empty rather than padded with soft numbers. */
   counts?: Count[];
@@ -58,13 +63,25 @@ export const PROFILE = {
     "I turn regulation into software that ships — and then run it in production.",
   whereabouts: [
     "Bengaluru, India",
-    "Six years, three companies",
-    "Open to senior backend & platform roles",
+    "Five years, three companies",
+    "Open to senior full stack & platform roles",
   ],
+  /** Also the page's meta description, so the two can never drift apart. */
   tagline:
-    "6+ years building enterprise software and multi-tenant SaaS platforms — turning GDPR, ISO 27001, SOC 2 and DPDP requirements into software that ships.",
+    "5+ years building enterprise software and multi-tenant SaaS platforms — turning GDPR, ISO 27001, SOC 2 and DPDP requirements into software that ships.",
   badges: ["DPDP", "GDPR", "ISO 27001", "SOC 2"],
 };
+
+/**
+ * The masthead strip. Every figure here is checkable against something further
+ * down the page rather than asserted on its own.
+ */
+export const HEADLINE_COUNTS: Count[] = [
+  { value: "5", label: "years shipping" },
+  { value: "2", label: "systems live in production" },
+  { value: "10", label: "modules on the GRC platform I led" },
+  { value: "7", label: "jurisdictions schema-drafted" },
+];
 
 export const CONTACT = {
   email: "thakuralok99@gmail.com",
@@ -74,7 +91,7 @@ export const CONTACT = {
   phoneHref: "tel:+919288389180",
   // Currently unused: the download buttons were removed until the PDF
   // exists. To restore them, drop Alok_Sharma_Software_Engineer.pdf into
-  // public/ and re-add the button in Hero.astro and Contact.astro.
+  // public/ and re-add the button in the rail and Contact.astro.
   resumeFile: "/Alok_Sharma_Software_Engineer.pdf",
 };
 
@@ -83,12 +100,21 @@ export const PROJECTS: Project[] = [
     name: "at0k Privacy",
     tagline: "Multi-jurisdiction privacy compliance, DPDP live",
     description:
-      "Privacy operations platform built around India's DPDP Act, with field schemas drafted for GDPR, CCPA, PIPEDA, POPIA, PDPA, PDPL and DORA. Covers consent records and forms, data inventory and ROPA, DPIA, vendor and breach management, data subject requests with evidence attachments, and an append-only audit trail. Ships an embeddable JavaScript consent SDK and a public DSR intake, with email OTP sign-in and per-tenant isolation throughout.",
-    stack: ["FastAPI", "Next.js", "TypeScript", "PostgreSQL", "Celery", "Redis", "Docker"],
+      "Privacy operations platform built around India's DPDP Act, with field schemas drafted for GDPR, CCPA, PIPEDA, POPIA, PDPA, PDPL and DORA — a law-config engine activates the same modules per jurisdiction. Every consent record pins an immutable SHA-256 snapshot of the form that captured it, so the append-only audit trail can replay any agreement exactly as it was given: purposes, notice text and all. Covers data inventory and ROPA, DPIA, vendor and breach management, and data subject requests with evidence attachments. Ships an embeddable JavaScript consent SDK — bcrypt-hashed API keys, origin allow-listing, anonymous-visitor capture with post-login identity merge, Global Privacy Control — alongside a public DSR intake, email OTP sign-in and per-tenant isolation throughout.",
+    stack: [
+      "FastAPI",
+      "Next.js 14",
+      "TypeScript",
+      "PostgreSQL 16",
+      "SQLAlchemy 2",
+      "Celery",
+      "Redis",
+      "Docker",
+    ],
     counts: [
       { value: "25", label: "backend modules" },
       { value: "7", label: "jurisdictions schema-drafted" },
-      { value: "1", label: "live: India DPDP" },
+      { value: "~900", label: "passing tests" },
     ],
     link: {
       href: "https://privacy.at0k.com",
@@ -103,20 +129,32 @@ export const PROJECTS: Project[] = [
     name: "AI Policy Builder",
     tagline: "AI-generated compliance policies, end to end",
     description:
-      "Multi-tenant SaaS that generates compliance policies with AI, then maps them to framework controls, runs gap analysis, and produces evidence requirements. Async generation pipeline with job polling, per-org rate limiting and token budgets, BYOK AI providers, and PDF/Markdown export. Auth runs on AWS Cognito.",
-    stack: ["FastAPI", "React", "TypeScript", "Celery", "MySQL", "Redis", "Cognito", "LiteLLM"],
+      "Multi-tenant SaaS that generates compliance policies with AI, then maps them to framework controls, runs gap analysis, and produces evidence requirements. Async generation pipeline with job polling, per-plan token budgets, per-org rate limiting, bring-your-own-key providers through LiteLLM with encrypted key storage, and PDF/Markdown export. Policies are drafted in a real-time collaborative editor — a Tiptap core over a Hocuspocus server teams host themselves, gated by a separately deployed licensing service issuing Ed25519-signed license JWTs with heartbeat reporting and revocation. Auth on AWS Cognito, Stripe subscription billing, self-hosted on GCP behind Nginx with Let's Encrypt and Cloudflare.",
+    stack: [
+      "FastAPI",
+      "React",
+      "TypeScript",
+      "Celery",
+      "MySQL",
+      "Redis",
+      "Cognito",
+      "LiteLLM",
+      "Tiptap",
+      "Hocuspocus",
+      "Stripe",
+    ],
     counts: [
       { value: "4", label: "frameworks" },
       { value: "212", label: "controls catalogued" },
       { value: "24", label: "canonical policies" },
     ],
-    // No demo grant: the deployed tenant has no AI provider configured, so a
-    // reviewer could sign in and browse the catalogue but every generation
-    // would fail. Publishing credentials to that is worse than publishing none.
-    noAccess: ["Live deployment.", "Walkthrough on request."],
     link: {
       href: "https://aipolicy.at0k.com",
       label: "aipolicy.at0k.com",
+    },
+    demo: {
+      email: "demouser@at0k.com",
+      password: "demo@r00t",
     },
   },
   {
@@ -129,15 +167,7 @@ export const PROJECTS: Project[] = [
       { value: "10", label: "modules" },
       { value: "5", label: "cloud integrations" },
     ],
-    noAccess: ["Commercial product.", "Walkthrough on request."],
-  },
-  {
-    name: "at0k Editor + Collab",
-    tagline: "Rich-text editing infrastructure with self-hosted collaboration",
-    description:
-      "An editor core and pro extension set, paired with a real-time collaboration server teams host themselves — no vendor lock-in. Backed by a licensing service issuing Ed25519-signed license JWTs with heartbeat reporting and revocation.",
-    stack: ["TypeScript", "Tiptap", "Hocuspocus", "FastAPI", "PostgreSQL"],
-    noAccess: ["Licensed product.", "Source available under NDA."],
+    // noAccess: ["Commercial product.", "Walkthrough on request."],
   },
   {
     name: "Commercial LMS Platforms",
@@ -145,13 +175,14 @@ export const PROJECTS: Project[] = [
     description:
       "Customer-facing learning platforms covering course management, student enrollment, authentication, payment workflows, progress tracking, assessments and certification.",
     stack: ["Laravel", "React", "MySQL", "Payments"],
+    // noAccess: ["Client products.", "Walkthrough on request."],
   },
 ];
 
 export const EXPERIENCE: Role[] = [
   {
     company: "Purplecop Security Pvt. Ltd",
-    title: "Senior Software Developer",
+    title: "Senior Software Engineer",
     period: "Apr 2025 – Jul 2026",
     bullets: [
       "Led technical design and development of PurpleCop across architecture and multiple GRC modules.",
@@ -187,14 +218,94 @@ export const EDUCATION = {
   year: "2019",
 };
 
-export const SKILLS: SkillGroup[] = [
-  { label: "Backend", items: ["Python", "FastAPI", "Laravel", "Node.js", "Flask", "PHP"] },
-  { label: "Frontend", items: ["React.js", "Next.js", "TypeScript", "Redux", "Tailwind CSS", "ChakraUI"] },
-  { label: "Databases", items: ["PostgreSQL", "MySQL", "MongoDB", "Firebase", "Redis"] },
-  { label: "DevOps", items: ["Docker", "Nginx", "Ubuntu Server", "SSL/TLS", "CI/CD", "Proxmox"] },
-  { label: "Compliance", items: ["GDPR", "ISO 27001", "SOC 2", "DPDP Act 2023", "NIST CSF"] },
+/**
+ * Judgment rather than tooling — the things that survive a change of stack.
+ * Frameworks and domain expertise live here rather than in SKILLS so that
+ * nothing is claimed twice on the same page.
+ */
+export const DOMAINS: SkillGroup[] = [
   {
-    label: "Domain Expertise",
-    items: ["RBAC & Access Control", "Consent Management", "DSR Workflows", "TPRM", "Multi-Tenant SaaS", "Audit Trails"],
+    label: "GRC & Compliance",
+    items: [
+      "Multi-tenant enterprise GRC",
+      "Cybersecurity platforms",
+      "Continuous compliance monitoring",
+      "Compliance scoring",
+    ],
+  },
+  {
+    label: "Compliance frameworks",
+    items: ["GDPR", "ISO 27001", "SOC 2", "DPDP Act 2023", "HIPAA", "NIST CSF"],
+  },
+  {
+    label: "Product domains",
+    items: [
+      "Policy automation",
+      "Consent management",
+      "DSR workflows",
+      "TPRM",
+      "Risk register",
+      "Audit management",
+      "Trust center",
+      "LMS",
+      "Compliance gap analysis",
+    ],
+  },
+  {
+    label: "AI & automation",
+    items: [
+      "Generative policy drafting",
+      "AI-assisted compliance",
+      "Automated control mapping",
+      "LLM integration",
+      "Multi-provider orchestration",
+    ],
+  },
+  {
+    label: "Architecture patterns",
+    items: [
+      "Multi-tenant SaaS",
+      "RBAC & access control",
+      "Append-only audit trails",
+      "Event-driven systems",
+      "Real-time collaboration",
+      "Docker-based deployments",
+    ],
+  },
+  {
+    label: "Regulatory translation",
+    items: [
+      "Requirements → technical specifications",
+      "Framework mapping",
+      "Control implementation",
+      "Evidence-based compliance tracking",
+    ],
+  },
+];
+
+/** Tools only. Everything a hiring manager could infer from a repo. */
+export const SKILLS: SkillGroup[] = [
+  {
+    label: "Backend",
+    items: ["Python", "FastAPI", "Laravel", "Node.js", "Flask", "PHP"],
+  },
+  {
+    label: "Frontend",
+    items: [
+      "React.js",
+      "Next.js",
+      "TypeScript",
+      "Redux",
+      "Tailwind CSS",
+      "ChakraUI",
+    ],
+  },
+  {
+    label: "Databases",
+    items: ["PostgreSQL", "MySQL", "MongoDB", "Firebase", "Redis"],
+  },
+  {
+    label: "DevOps",
+    items: ["Docker", "Nginx", "Ubuntu Server", "SSL/TLS", "CI/CD", "Proxmox"],
   },
 ];

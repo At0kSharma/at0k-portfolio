@@ -6,38 +6,83 @@
   --color-brand: #7b2233;
 }
 
-:root {
-  /* Oxblood on bone. The palette of the documents this software exists to
-     produce - audit reports, registers, statutes - and the one accent that is
-     dark enough to work as fill AND as body text, so the page needs a single
-     accent rather than a fill colour plus a readable stand-in. Neutrals carry
-     a faint mauve bias so the bone ground sits under the oxblood rather than
-     beside it. */
-  --paper:   #F4F1EC;
-  --surface: #FBF9F6;
-  --sunk:    #E8E2D9;
-  --ink:     #1B1719;
-  --mute:    #6E6469;
-  --rule:    #DAD3CA;
-  --brand:   #7B2233;
-  --link:    #7B2233;
-  --onbrand: #F7F4EF;
+/* ── Two grounds, one design ──────────────────────────────────────────
+   Light is oxblood on bone: the palette of the documents this software
+   exists to produce - audit reports, registers, statutes. Dark is not an
+   inversion of it but the same materials at night: the bone survives as
+   INK rather than ground, over a warm near-black, and the oxblood lifts
+   to a rose bright enough to stay readable as small text on it.
 
-  /* Single-theme by choice: oxblood on bone is the design, and flipping it
-     to a dark ground makes a different object rather than a night version of
-     this one. Every colour is painted explicitly so the page holds whatever
-     ground the browser puts behind it. */
+   Three states, because the viewer has three. A bare :root carries the
+   whole light palette; the media query covers the default "system"
+   setting, guarded so an explicit light choice still wins on a dark OS;
+   the [data-theme] blocks let the toggle win in both directions. Every
+   token is declared in :root first, so nothing can resolve to nothing. */
+:root {
+  --paper:     #F4F1EC;
+  --surface:   #FBF9F6;
+  --sunk:      #E8E2D9;
+  --ink:       #1B1719;
+  --mute:      #6E6469;
+  --rule:      #DAD3CA;
+  --brand:     #7B2233;
+  /* Split from --brand so the one filled object can sit a shade deeper than
+     the accent that has to stay legible as small text. In light they agree. */
+  --brandfill: #7B2233;
+  --onbrand:   #F7F4EF;
+  --link:      #7B2233;
 
   --measure: 62ch;
   --s0: 1rem;
   --s1: 1.18rem;
   --s2: 1.5rem;
   --s3: 2rem;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:     #141110;
+    --surface:   #1D1817;
+    --sunk:      #221C1B;
+    --ink:       #E9E0D4;
+    --mute:      #94887F;
+    --rule:      #2C2523;
+    --brand:     #DE7189;
+    --brandfill: #8E2A41;
+    --onbrand:   #FBEEF1;
+    --link:      #DE7189;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper:     #141110;
+  --surface:   #1D1817;
+  --sunk:      #221C1B;
+  --ink:       #E9E0D4;
+  --mute:      #94887F;
+  --rule:      #2C2523;
+  --brand:     #DE7189;
+  --brandfill: #8E2A41;
+  --onbrand:   #FBEEF1;
+  --link:      #DE7189;
+
+  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
+
 body {
+  margin: 0;
   background: var(--paper);
   color: var(--ink);
   font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
@@ -46,43 +91,192 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.sheet { max-width: 70rem; margin: 0 auto; padding: 0 1.5rem 5rem; }
-
-h1, h2, h3 { margin: 0; font-weight: 600; text-wrap: balance; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; text-wrap: balance; }
+section { scroll-margin-top: 1.5rem; }
 p { margin: 0; max-width: var(--measure); }
 a { color: var(--link); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
 a:hover { text-decoration-thickness: 2px; }
-a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 2px; }
+a:focus-visible,
+button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 2px; }
 
-/* ── Masthead ─────────────────────────────────────────────────────────
-   The name is set in mono at display scale. Monospace as a headline is the
-   vernacular of the tools this work actually lives in - config, logs,
-   migrations - without pretending to be a terminal. */
-.masthead { padding: 6rem 0 3rem; }
-.masthead .name {
+/* ── Shell: a fixed rail beside a scrolling register ──────────────────
+   The rail is the masthead, the table of contents and the contact card at
+   once, so availability and an email address are on screen at every scroll
+   position rather than only at the end of the document. */
+.shell {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  gap: 0 3rem;
+  max-width: 82rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+  align-items: start;
+}
+
+.rail {
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 3.5rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.register {
+  border-left: 1px solid var(--rule);
+  padding: 0 0 5rem 3rem;
+  min-width: 0;
+}
+
+/* ── Rail contents ───────────────────────────────────────────────── */
+.rail .name {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: clamp(2.4rem, 8.5vw, 5.5rem);
+  font-size: clamp(1.7rem, 2.6vw, 2.1rem);
   font-weight: 500;
   letter-spacing: -0.055em;
-  line-height: 0.92;
+  line-height: 0.94;
 }
-.masthead .name span { color: var(--brand); }
-.masthead .thesis {
-  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
-  line-height: 1.4;
-  margin-top: 2rem;
-  max-width: 30ch;
+.rail .name span { color: var(--brand); }
+.rail .role {
+  font-size: 0.82rem;
+  color: var(--mute);
+  line-height: 1.5;
+  margin-top: 0.75rem;
+}
+
+.index { display: flex; flex-direction: column; gap: 0.05rem; }
+.index .lbl {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 0.55rem;
+}
+.index a {
+  font-size: 0.9rem;
+  color: var(--mute);
+  text-decoration: none;
+  padding: 0.22rem 0 0.22rem 0.8rem;
+  border-left: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.index a:hover { color: var(--ink); }
+.index a.on {
+  color: var(--brand);
+  border-left-color: var(--brand);
+  font-weight: 500;
+}
+
+.availability {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--brand);
+}
+
+/* One dot, three jobs: availability in the rail, and live vs. closed on
+   every record in the register. Shape carries the state, not just colour. */
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand);
+  flex: none;
+  display: block;
+}
+.dot.closed {
+  background: transparent;
+  border: 1.5px solid var(--mute);
+}
+
+.rail .meta {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--mute);
+  line-height: 1.9;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  word-break: break-word;
+}
+.rail .meta a { color: var(--mute); text-decoration: none; }
+.rail .meta a:hover { color: var(--brand); text-decoration: underline; }
+
+.themeswitch {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--mute);
+  cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.7rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.themeswitch:hover { color: var(--brand); border-color: var(--brand); }
+/* Each label is printed once and the inactive one hidden, so the button
+   always reads as the state it will switch TO. */
+.themeswitch .to-dark { display: inline; }
+.themeswitch .to-light { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .themeswitch .to-dark { display: none; }
+  :root:not([data-theme="light"]) .themeswitch .to-light { display: inline; }
+}
+:root[data-theme="dark"] .themeswitch .to-dark { display: none; }
+:root[data-theme="dark"] .themeswitch .to-light { display: inline; }
+:root[data-theme="light"] .themeswitch .to-dark { display: inline; }
+:root[data-theme="light"] .themeswitch .to-light { display: none; }
+
+/* ── Opener: the claim, then the figures behind it ────────────────── */
+.opener { padding: 3.5rem 0 0; }
+.opener .thesis {
+  font-size: clamp(1.5rem, 3.4vw, 2.35rem);
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+  max-width: 22ch;
   font-weight: 450;
 }
-.masthead .whereabouts {
-  margin-top: 2.5rem;
+.opener .whereabouts {
+  margin-top: 1.75rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.75rem;
+  gap: 0.4rem 1.75rem;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--mute);
 }
+.glance {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2.25rem;
+}
+.glance div { display: flex; align-items: baseline; gap: 0.45rem; }
+.glance b {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+.glance span { font-size: 0.8rem; color: var(--mute); }
 
 /* ── Section rules ────────────────────────────────────────────────── */
 .band {
@@ -100,23 +294,25 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
   font-size: 0.75rem;
   font-style: normal;
   color: var(--mute);
+  text-align: right;
 }
 
 /* ── Work: the heavy sections, because they are the point ─────────── */
 .work { display: flex; flex-direction: column; }
 .job {
   display: grid;
-  grid-template-columns: 1fr minmax(0, 22rem);
+  grid-template-columns: 1fr minmax(0, 18rem);
   gap: 1.5rem 3rem;
   padding: 2.5rem 0;
   border-top: 1px solid var(--rule);
   align-items: start;
 }
 .job:first-of-type { border-top: none; padding-top: 1.75rem; }
-@media (max-width: 54rem) { .job { grid-template-columns: 1fr; } }
+@media (max-width: 76rem) { .job { grid-template-columns: 1fr; } }
 
+.job .title { display: flex; align-items: center; gap: 0.7rem; }
 .job h3 { font-size: var(--s3); letter-spacing: -0.03em; line-height: 1.1; }
-.job .kicker { color: var(--link); margin-top: 0.4rem; font-weight: 450; font-size: var(--s1); }
+.job .kicker { color: var(--brand); margin-top: 0.4rem; font-weight: 450; font-size: var(--s1); }
 .job .prose { margin-top: 1.1rem; color: var(--mute); }
 
 /* Counts are evidence, not ornament: each one is a thing that exists in
@@ -130,7 +326,7 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
   font-size: 0.82rem;
   color: var(--mute);
 }
-.counts b { color: var(--link); font-weight: 600; }
+.counts b { color: var(--brand); font-weight: 600; }
 
 .stack {
   margin-top: 1.1rem;
@@ -142,7 +338,7 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
 
 /* ── The one bold element ─────────────────────────────────────────── */
 .grant {
-  border: 1px solid var(--brand);
+  border: 1px solid var(--brandfill);
   background: var(--surface);
 }
 .grant-top {
@@ -151,7 +347,7 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
   align-items: center;
   gap: 1rem;
   padding: 0.65rem 1rem;
-  background: var(--brand);
+  background: var(--brandfill);
   color: var(--onbrand);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.72rem;
@@ -164,15 +360,34 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
   padding: 1rem;
   display: grid;
   grid-template-columns: 5rem 1fr;
-  gap: 0.4rem 1rem;
+  gap: 0.55rem 1rem;
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.84rem;
+  align-items: center;
 }
 .grant dt { color: var(--mute); }
-.grant dd { margin: 0; user-select: all; word-break: break-all; }
+.grant dd { margin: 0; display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.grant dd span { user-select: all; word-break: break-all; }
+
+.copy {
+  flex: none;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  color: var(--mute);
+  cursor: pointer;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.copy:hover { color: var(--brand); border-color: var(--brand); }
+.copy[data-state="done"] { color: var(--brand); border-color: var(--brand); }
 
 /* Each line of a no-access note is its own block: the source keeps them as
-   newline-separated text, and a regex literal in an Astro attribute does not
+   separate entries, and a regex literal in an Astro attribute does not
    survive the compiler. */
 .noaccess span { display: block; }
 .noaccess {
@@ -187,7 +402,7 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
 /* ── History: deliberately lighter and tighter than Work ──────────── */
 .stint {
   display: grid;
-  grid-template-columns: 9rem 1fr;
+  grid-template-columns: 10.5rem 1fr;
   gap: 0.5rem 2.5rem;
   padding: 1.5rem 0;
   border-top: 1px solid var(--rule);
@@ -198,6 +413,7 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
   font-size: 0.8rem;
   color: var(--mute);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   padding-top: 0.25rem;
 }
 .stint h3 { font-size: var(--s1); }
@@ -205,7 +421,7 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
 .stint ul { margin: 0.75rem 0 0; padding-left: 1.05rem; color: var(--mute); max-width: var(--measure); }
 .stint li { margin-bottom: 0.3rem; }
 
-/* ── Stack: a compact grid, not six more full-width bands ─────────── */
+/* ── Domains and Stack: compact grids, not more full-width bands ──── */
 .kit {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
@@ -247,4 +463,37 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-r
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 2rem;
+}
+
+/* ── Below the rail's width, the dossier folds into one column ─────
+   The rail stops being furniture and becomes an ordinary header block;
+   the index turns from a vertical spine into a horizontal row. */
+@media (max-width: 62rem) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0 1.5rem;
+  }
+  .rail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 3rem 0 1.75rem;
+    border-bottom: 1px solid var(--rule);
+    gap: 1.5rem;
+  }
+  .rail .name { font-size: clamp(2.4rem, 11vw, 4rem); }
+  .index { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 1.25rem; }
+  .index .lbl { margin-bottom: 0; width: 100%; }
+  .index a {
+    padding: 0.1rem 0;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+  .index a.on { border-left: none; border-bottom-color: var(--brand); }
+  .register {
+    border-left: none;
+    padding: 0 0 4rem;
+  }
+  .opener { padding-top: 2.5rem; }
 }
