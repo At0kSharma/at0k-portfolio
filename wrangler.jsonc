@@ -1,0 +1,13 @@
+{
+  // Static-assets-only Worker. Astro builds to ./dist with output: "static",
+  // so there is no server entrypoint and no adapter is needed.
+  //
+  // This file must exist: without it, `wrangler deploy` runs its auto-config
+  // flow, which answers "yes" non-interactively and runs `astro add cloudflare`
+  // mid-build. That adapter is incompatible with Astro 7 and breaks the build.
+  "name": "at0k-portfolio",
+  "compatibility_date": "2026-09-09",
+  "assets": {
+    "directory": "./dist"
+  }
+}
