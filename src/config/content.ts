@@ -87,6 +87,8 @@ export const CONTACT = {
   email: "thakuralok99@gmail.com",
   github: "https://github.com/At0kSharma",
   githubLabel: "github.com/At0kSharma",
+  linkedin: "https://www.linkedin.com/in/thakuralok99",
+  linkedinLabel: "linkedin.com/in/thakuralok99",
   phone: "+91-9288389180",
   phoneHref: "tel:+919288389180",
   // Currently unused: the download buttons were removed until the PDF
@@ -215,11 +217,26 @@ export const EXPERIENCE: Role[] = [
   },
 ];
 
-export const EDUCATION = {
-  degree: "B.Tech in Information Technology",
-  institution: "Sona College of Technology, Anna University",
-  year: "2019",
+export type Study = {
+  degree: string;
+  institution: string;
+  /** Rendered in the same column as a role's period over in History. */
+  year: string;
+  /** Optional detail lines. Omitted rather than padded. */
+  notes?: string[];
 };
+
+/**
+ * A list rather than a single record: the section renders one entry per
+ * qualification, so a later certification needs no template change.
+ */
+export const EDUCATION: Study[] = [
+  {
+    degree: "B.Tech in Information Technology",
+    institution: "Sona College of Technology, Anna University",
+    year: "2019",
+  },
+];
 
 /**
  * Judgment rather than tooling — the things that survive a change of stack.

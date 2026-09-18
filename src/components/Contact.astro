@@ -1,5 +1,5 @@
 ---
-import { CONTACT, EDUCATION } from "../config/content";
+import { CONTACT } from "../config/content";
 ---
 <section id="contact">
   <div class="band">
@@ -13,12 +13,12 @@ import { CONTACT, EDUCATION } from "../config/content";
       <dd><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></dd>
     </div>
     <div>
-      <dt>GitHub</dt>
-      <dd><a href={CONTACT.github} target="_blank" rel="noopener noreferrer">{CONTACT.githubLabel}</a></dd>
+      <dt>LinkedIn</dt>
+      <dd><a href={CONTACT.linkedin} target="_blank" rel="noopener noreferrer">{CONTACT.linkedinLabel}</a></dd>
     </div>
     <div>
-      <dt>Education</dt>
-      <dd>{EDUCATION.degree} — {EDUCATION.institution}, {EDUCATION.year}</dd>
+      <dt>GitHub</dt>
+      <dd><a href={CONTACT.github} target="_blank" rel="noopener noreferrer">{CONTACT.githubLabel}</a></dd>
     </div>
   </dl>
 </section>

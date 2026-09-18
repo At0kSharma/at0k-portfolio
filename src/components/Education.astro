@@ -1,0 +1,23 @@
+---
+import { EDUCATION } from "../config/content";
+---
+<section id="education">
+  <div class="band">
+    <h2>Education</h2>
+  </div>
+
+  {EDUCATION.map((study) => (
+    <article class="stint">
+      <div class="when">{study.year}</div>
+      <div>
+        <h3>{study.degree}</h3>
+        <p class="at">{study.institution}</p>
+        {study.notes && (
+          <ul>
+            {study.notes.map((note) => <li>{note}</li>)}
+          </ul>
+        )}
+      </div>
+    </article>
+  ))}
+</section>

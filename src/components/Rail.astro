@@ -9,6 +9,7 @@ import { PROFILE, CONTACT } from "../config/content";
 const SECTIONS = [
   { id: "work", label: "Work" },
   { id: "history", label: "History" },
+  { id: "education", label: "Education" },
   { id: "domains", label: "Domains" },
   { id: "stack", label: "Stack" },
   { id: "contact", label: "Contact" },
@@ -41,6 +42,9 @@ const roleLines = PROFILE.title.split(" · ");
   <div class="meta">
     <span>Bengaluru, India</span>
     <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+    <a href={CONTACT.linkedin} target="_blank" rel="noopener noreferrer">
+      {CONTACT.linkedinLabel}
+    </a>
     <a href={CONTACT.github} target="_blank" rel="noopener noreferrer">
       {CONTACT.githubLabel}
     </a>
